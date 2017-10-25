@@ -8,7 +8,7 @@ Heres the blue print:
 
 2.boxing the data to keep them safe.*********finished**********
 
-3.output the data of each game to a txt file, as know as our experience data base.************finished************
+3.output the data of each game to a txt file, as know as our experience data base.*********finished**********
 
 4.real-time changing the tendency of all 4 options of each pattern on data base.
 
