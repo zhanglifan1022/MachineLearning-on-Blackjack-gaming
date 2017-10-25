@@ -1,6 +1,12 @@
 # blackjack
 Hey Guys.
-Welcome to the project. This is a machine learning program base on blackjack gaming.
+Welcome to the project. This is a machine learning program based on blackjack gaming.
+
+No possibilities is calculated in the program. None prohibitation is set in the game.
+
+All decision made by computer will be randomly but with an increasing tendency if thats the  'good' choice determined by experience database.
+
+The computer can be really sily at early stage but the more games he played the smarter he will be. So lets see how far he could become!
 
 Heres the blue print:
 
