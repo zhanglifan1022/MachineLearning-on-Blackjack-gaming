@@ -16,11 +16,11 @@ Heres the blue print:
 
 3.output the data of each game to a txt file, as know as our experience data base.*********finished**********
 
-4.real-time changing the tendency of all 4 options of each pattern on data base.
+4.real-time changing the tendency of all 4 options of each pattern on data base.*********finished**********
 
-5.sort out the data for easier querying.
+5.sort out the data for easier querying.*********finished**********
 
-6.input the tendency to main program.
+6.input the tendency to main program.*********finished**********
 
 7.let the computer select its own option base on experience database.
 
