@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace BlackJack
 {
     class Casino
     {
         int[] cardbase = new int[52];
+        int money = 1000;
 
         public void Shuffle()
         {
@@ -22,6 +24,17 @@ namespace BlackJack
                 int tmp = cardbase[idx1];
                 cardbase[idx1] = cardbase[idx2];
                 cardbase[idx2] = tmp;
+            }
+        }
+        public int Money
+        {
+            get
+            {
+                return money;
+            }
+            set
+            {
+                money = value;
             }
         }
         public int Display(int a)
@@ -115,49 +128,61 @@ namespace BlackJack
     }
     class Player
     {
-        int money = 1000;
-        int playercardnum = 0;
-        int playerhandlength = playerhand.Length;
-        double trend = 0;
-        char knock;
+        
+        int htrend = 25000;
+        int dtrend = 25000;
+        int strend = 25000;
+        int rtrend = 25000;
+        string knock;
         static int[] playerhand = new int[12];
-
-        public int Money
+                     
+        public int HTrend
         {
             get
             {
-                return money;
+                return htrend;
             }
             set
             {
-                money = value;
-            }
-        }                           
-        public double Trend
-        {
-            get
-            {
-                return trend;
-            }
-            set
-            {
-                trend = value;
+                htrend = value;
             }
         }
-        public int PlayerCardNum
+        public int DTrend
         {
             get
             {
-                return playercardnum;
+                return dtrend;
             }
             set
             {
-                playercardnum = value;
+                dtrend = value;
             }
-        }                   
+        }
+        public int STrend
+        {
+            get
+            {
+                return strend;
+            }
+            set
+            {
+                strend = value;
+            }
+        }
+        public int RTrend
+        {
+            get
+            {
+                return rtrend;
+            }
+            set
+            {
+                rtrend = value;
+            }
+        }            
         public int GetPlayerHandLength()
         {
-            return playerhandlength;
+            return playerhand.Length;
         }           
         public int[] PlayerHand
         {
@@ -174,7 +199,7 @@ namespace BlackJack
         {
             Array.Clear(playerhand, 0, playerhand.Length);
         }
-        public char Knock
+        public string Knock
         {
             get
             {
@@ -190,8 +215,8 @@ namespace BlackJack
             try
             {
                 Console.WriteLine("Hit(h)/Stand(s)/Double(d)/Surrender(r)?");
-                knock = Convert.ToChar(Console.ReadLine());
-                if ((knock != 'h') && (knock != 's') && (knock != 'd') && (knock != 'r'))
+                knock = Console.ReadLine();
+                if ((knock != "h") && (knock != "s") && (knock != "d") && (knock != "r"))
                 {
                     throw (new NotAllowed("NotAllowed"));
                 }
@@ -210,11 +235,11 @@ namespace BlackJack
             {
             }
         }
-        public int GetResult(int sumplayer, int sumdealer, char knock, int money)
+        public int GetResult(int sumplayer, int sumdealer, string knock, int money)
             {
             if (sumplayer < sumdealer)
             {
-                if (knock == 'd') money -= 200;
+                if (knock == "d") money -= 200;
                 else money -= 100;
                 Console.WriteLine("You Lose.Score=" + money);
                 return money;
@@ -227,7 +252,7 @@ namespace BlackJack
             }
             else
                 {
-                    if (knock == 'd') money += 200;
+                    if (knock == "d") money += 200;
                     else money += 100;
                     Console.WriteLine("You Win!Score=" + money);
                     return money;
@@ -292,19 +317,23 @@ namespace BlackJack
     }
     //主程序入口
     static class Program
-    {
+    {   //主方法
         static void Main(string[] args)
         {
             string MyPath = @"C: \Users\lifan\blackjack\Data.txt";
             Casino c = new Casino();
-            Player p = new Player();
-            Dealer d = new Dealer();
-            FileStream fs = new FileStream(MyPath, FileMode.Append);
-            StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
             do
             {
+                Player p = new Player();
+                Dealer d = new Dealer();
+                FileStream fs = new FileStream(MyPath, FileMode.OpenOrCreate);
+                StreamReader sr = new StreamReader(fs, Encoding.Default);
+                
                 int i = 0;
-                p.PlayerCardNum = 0;
+                int mark = 0;
+                int IfExist = 0;
+                string card1;
+                string card2;
                 try
                 {   //准备阶段
                     p.Clear();
@@ -312,17 +341,31 @@ namespace BlackJack
                     c.Shuffle();
                     Console.WriteLine("**********************************************");
                     Console.WriteLine("Welcome to BlackJack，Scoring 1500 to Claim a Prize");
-                    Console.WriteLine("PlayerHand,Score=" + p.Money);
+                    Console.WriteLine("PlayerHand,Score=" + c.Money);
                     Console.WriteLine("**********************************************");
-                    //玩家回合
-                    c.Deliver(p.PlayerHand , i);
-                    sw.Write(p.PlayerHand[i] + " ");
+                    //Player Stage
+                    c.Deliver(p.PlayerHand , i);//1st Card
                     i++;
-                    c.Deliver(p.PlayerHand, i);
-                    sw.Write(p.PlayerHand[i] + " ");
+                    c.Deliver(p.PlayerHand, i);//2nd Card
                     i++;
-                    p.PlayerCardNum++;
-                    p.PlayerCardNum++;
+                    while ((card1 = sr.ReadLine()) != null)//EXP database loading
+                    {
+                        card2 = sr.ReadLine();
+                        //if exist then download exp
+                        if ((Convert.ToInt32(card1) == p.PlayerHand[0]) && (Convert.ToInt32(card2) == p.PlayerHand[1]))
+                        {
+                            IfExist++;
+                            p.HTrend = Convert.ToInt32(sr.ReadLine());
+                            p.DTrend = Convert.ToInt32(sr.ReadLine());
+                            p.STrend = Convert.ToInt32(sr.ReadLine());
+                            p.RTrend = Convert.ToInt32(sr.ReadLine());
+                            mark++;
+                            break;
+                        }
+                        mark += 2;
+                    }
+                    sr.Close();
+                    fs.Close();
 
                     if (c.GetSum(p.PlayerHand) == 21)
                     {
@@ -330,17 +373,15 @@ namespace BlackJack
                     }
                     else
                     {
+                        Console.WriteLine("Win rate:H({0}%),D({1}%),S({2}%),R({3}%）", p.HTrend, p.DTrend, p.STrend, p.RTrend);
                         p.Ask1();
-                        sw.Write(p.Knock + " ");
                         switch (p.Knock)
                         {
-                            case 'h':
-                                while (p.Knock == 'h')
+                            case "h":
+                                while (p.Knock == "h")
                                 {
                                     c.Deliver(p.PlayerHand, i);
-                                    sw.Write(p.PlayerHand[i] + " ");
                                     i++;
-                                    p.PlayerCardNum++;
                                     if (c.GetSum(p.PlayerHand) > 21)
                                     {
                                         throw (new YouBursted("You Bursted"));
@@ -348,23 +389,20 @@ namespace BlackJack
                                     do
                                     {
                                         p.Ask1();
-                                        sw.Write(p.Knock + " ");
-                                    } while (p.Knock == 'd');
+                                    } while (p.Knock == "d" || p.Knock == "r");
                                 }
                                 break;
 
                             //case 'p':
-                            case 'd':
+                            case "d":
                                 c.Deliver(p.PlayerHand, i);
-                                sw.Write(p.PlayerHand[i] + " ");
                                 i++;
-                                p.PlayerCardNum++;
                                 if (c.GetSum(p.PlayerHand) > 21)
                                 {
                                     throw (new YouBursted("You Bursted"));
                                 }
                                 break;
-                            case 'r':
+                            case "r":
                                 throw (new YouSurrender("You Surrender"));
                             default:
                                 break;
@@ -388,53 +426,51 @@ namespace BlackJack
                             }
                         }
                     //结算
-                    p.Money = p.GetResult(c.GetSum(p.PlayerHand), c.GetSum(d.DealerHand), p.Knock, p.Money);
-                    sw.Write(p.Trend + " ");
-
+                    c.Money = p.GetResult(c.GetSum(p.PlayerHand), c.GetSum(d.DealerHand), p.Knock, c.Money);
+                    EditFile(mark, Convert.ToString(p.PlayerHand[0]), Convert.ToString(p.PlayerHand[1]), Convert.ToString(p.HTrend), Convert.ToString(p.DTrend), Convert.ToString(p.STrend), Convert.ToString(p.RTrend), MyPath, IfExist);
                 }
                 catch (YouGotABlackJack)
                 {
-                    p.Money += 150;
-                    p.Trend = 0.15;
-                    Console.WriteLine("Good Fortune Sir!!Score=" + p.Money);
-                    sw.Write(p.Trend + " ");
+                    c.Money += 150;
+                    Console.WriteLine("Good Fortune Sir!!Score=" + c.Money);
+                    EditFile(mark, Convert.ToString(p.PlayerHand[0]), Convert.ToString(p.PlayerHand[1]), Convert.ToString(p.HTrend), Convert.ToString(p.DTrend), Convert.ToString(p.STrend), Convert.ToString(p.RTrend), MyPath, IfExist);
                 }
                 catch (YouBursted)
                 {
-                    if (p.Knock == 'd')
+                    if (p.Knock == "d")
                     {
-                        p.Money -= 200;
-                        p.Trend = -0.2;
+                        c.Money -= 200;
+                        p.DTrend -= 20;
                     }
                     else
                     {
-                        p.Money -= 100;
-                        p.Trend = -0.1;
+                        c.Money -= 100;
+                        p.HTrend -= 10;
                     }
-                    Console.WriteLine("You Burst!Score=" + p.Money);
-                    sw.Write(p.Trend + " ");
-                }
+                    Console.WriteLine("You Burst!Score=" + c.Money);
+                    EditFile(mark, Convert.ToString(p.PlayerHand[0]), Convert.ToString(p.PlayerHand[1]), Convert.ToString(p.HTrend), Convert.ToString(p.DTrend), Convert.ToString(p.STrend), Convert.ToString(p.RTrend), MyPath, IfExist);
+                } 
                 catch (DealerBusted)
                 {
-                    if (p.Knock == 'd')
+                    if (p.Knock == "d")
                     {
-                        p.Money += 200;
-                        p.Trend = 0.2;
+                        c.Money += 200;
+                        p.DTrend += 20;
                     }
                     else
                     {
-                        p.Money += 100;
-                        p.Trend = 0.1;
+                        c.Money += 100;
+                        p.STrend += 10;
                     }
-                    Console.WriteLine("Dealer Burst!You Win!Score=" + p.Money);
-                    sw.Write(p.Trend + " ");
+                    Console.WriteLine("Dealer Burst!You Win!Score=" + c.Money);
+                    EditFile(mark, Convert.ToString(p.PlayerHand[0]), Convert.ToString(p.PlayerHand[1]), Convert.ToString(p.HTrend), Convert.ToString(p.DTrend), Convert.ToString(p.STrend), Convert.ToString(p.RTrend), MyPath, IfExist);
                 }
                 catch (YouSurrender)
                 {
-                    p.Money -= 50;
-                    p.Trend = -0.05;
-                    Console.WriteLine("You Surrender. Score=" + p.Money);
-                    sw.Write(p.Trend + " ");
+                    c.Money -= 50;
+                    p.RTrend -= 5;
+                    Console.WriteLine("You Surrender. Score=" + c.Money);
+                    EditFile(mark, Convert.ToString(p.PlayerHand[0]), Convert.ToString(p.PlayerHand[1]), Convert.ToString(p.HTrend), Convert.ToString(p.DTrend), Convert.ToString(p.STrend), Convert.ToString(p.RTrend), MyPath, IfExist);
                 }
                 finally
                 {
@@ -442,16 +478,106 @@ namespace BlackJack
                     Console.ReadKey();
                     Console.Clear();
                 }
-                sw.Write("\r\n");
-                sw.Flush();
             } while (true);
-            sw.Close();
-            fs.Close();
+        }
+        //数据读取
+        public static void TendencyRead(string value)
+        {
+           
+        }
+        //文件改写
+        public static void EditFile(int mark, string newLineValue1, string newLineValue2, string newLineValue3, string newLineValue4, string newLineValue5, string newLineValue6, string MyPath, int IfExist)
+        {
+            if (IfExist == 1)
+            {
+                FileStream fs = new FileStream(MyPath, FileMode.Open);
+                StreamReader sr = new StreamReader(fs, Encoding.Default);
+                string line = sr.ReadLine();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 1; line != null; i++)
+                {
+                    sb.Append(line + "\r\n");
+                    if (i != mark - 1)
+                        line = sr.ReadLine();
+                    else
+                    {
+                        line = sr.ReadLine();
+                        sb.Append(line + "\r\n");
+                        line = sr.ReadLine();
+                        sb.Append(line + "\r\n");
+                        sb.Append(newLineValue3 + "\r\n");
+                        sr.ReadLine();
+                        sb.Append(newLineValue4 + "\r\n");
+                        sr.ReadLine();
+                        sb.Append(newLineValue5 + "\r\n");
+                        sr.ReadLine();
+                        sb.Append(newLineValue6 + "\r\n");
+                        sr.ReadLine();
+                        line = sr.ReadLine();
+                    }
+                }
+                sr.Close();
+                fs.Close();
+                FileStream fs1 = new FileStream(MyPath, FileMode.Open, FileAccess.Write);
+                StreamWriter sw1 = new StreamWriter(fs1, Encoding.Default);
+                sw1.Write(sb.ToString());
+                sb.Clear();
+                sw1.Close();
+                fs1.Close();
+            }
+            else
+            {
+                FileStream fs = new FileStream(MyPath, FileMode.Open);
+                StreamReader sr = new StreamReader(fs, Encoding.Default);
+                string line = sr.ReadLine();
+                StringBuilder sb = new StringBuilder();
+                for (int i = 1; line != null; i++)
+                {
+                    sb.Append(line + "\r\n");
+                    line = sr.ReadLine();
+                }
+                sb.Append(newLineValue1 + "\r\n");
+                sb.Append(newLineValue2 + "\r\n");
+                sb.Append(newLineValue3 + "\r\n");
+                sb.Append(newLineValue4 + "\r\n");
+                sb.Append(newLineValue5 + "\r\n");
+                sb.Append(newLineValue6 + "\r\n");
+                sr.Close();
+                fs.Close();
+                FileStream fs1 = new FileStream(MyPath, FileMode.Open, FileAccess.Write);
+                StreamWriter sw1 = new StreamWriter(fs1, Encoding.Default);
+                sw1.Write(sb.ToString());
+                sb.Clear();
+                sw1.Close();
+                fs1.Close();
+            }
+        }
+        //随机趋势选择
+        public static string RandomTrend(int i1, int i2, int i3, int i4)
+        {
+            double p1, p2, p3, p4, p;
+            Random ran = new Random();
+            p1 = i1 / (i1 + i2 + i3 + i4);
+            p2 = i2 / (i1 + i2 + i3 + i4);
+            p3 = i3 / (i1 + i2 + i3 + i4);
+            p4 = i4 / (i1 + i2 + i3 + i4);
+            p = ran.NextDouble();
+            if ((p >= 0) && (p <p1))
+            {
+                return "h";
+            }
+            else if ((p >= p1) && (p < p1 + p2))
+            {
+                return "d";
+            }
+            else if ((p >= p1 + p2) && (p < p1 + p2 + p3))
+            {
+                return "s";
+            }
+            else
+            {
+                return "r";
+            }
         }
     }
 }
-//note10/25
-//****finished data output to txt. file.
-//adding 4 trendency display after every result.
-//txt. file data need to sort out.
-//same patterns will sum up accordingly.
