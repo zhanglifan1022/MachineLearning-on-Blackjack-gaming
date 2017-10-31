@@ -22,9 +22,9 @@ Heres the blue print:
 
 6.input the tendency to main program.*********finished**********
 
-7.let the computer select its own option base on experience database.
+7.let the computer select its own option base on experience database.*********finished**********
 
-8.total:0/100000 games played.
+8.total:1000000/100000000000 games played.*********Ongoing**********
 
 9.proved that the computer win rate can infinitely approach the theoretical and mathematical win rate, cause he is 
 always tend to take the 'right' option.
