@@ -26,8 +26,9 @@ Heres the blue print:
 
 7.1 Computer vs Human gaming added, you can have system as dealer against computer(automatically) and you as player on one table. lets see who got better win rate after 20 games!!
 
-8.total:1000000/100000000000 games played.*********Ongoing**********
-current win rate(steady state after 1h running):
+8.Total:100000000/10000000000000 games played.*********Ongoing**********
+
+8.1 Current win rate(steady state after 1h running):
 2017/11/3   ~39% 
 2017/11/2   ~32%
 2017/11/1   ~30%
