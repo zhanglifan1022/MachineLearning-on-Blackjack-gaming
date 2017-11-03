@@ -24,7 +24,13 @@ Heres the blue print:
 
 7.let the computer select its own option base on experience database.*********finished**********
 
+7.1 Computer vs Human gaming added, you can have system as dealer against computer(automatically) and you as player on one table. lets see who got better win rate after 20 games!!
+
 8.total:1000000/100000000000 games played.*********Ongoing**********
+current win rate(steady state after 1h running):
+2017/11/3   ~39% 
+2017/11/2   ~32%
+2017/11/1   ~30%
 
 9.proved that the computer win rate can infinitely approach the theoretical and mathematical win rate, cause he is 
 always tend to take the 'right' option.
