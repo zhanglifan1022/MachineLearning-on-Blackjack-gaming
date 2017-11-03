@@ -35,23 +35,22 @@ namespace BlackJack
                 Console.WriteLine("----------");
 
                 //庄家回合
-                if (com.Flag == 1 && p.Flag == 1)
+                if (com.Flag == 1 && p.Flag == 1)//电脑玩家和人类玩家同时有特殊状况？有则不进入庄家回合直接下一轮
                 { }
                 else
                 {
                     d.Flag = d.DealerRound(c.I, com, p);
-                }
-
-                //结算
-                if (d.Flag == 0)
-                {
-                    if (com.Flag == 0)
+                    //结算
+                    if (d.Flag == 0)//庄家没爆
                     {
-                        com.GetResult(com.Sum, d.Sum); 
-                    }
-                    if (p.Flag == 0)
-                    {
-                        //p.GetResult(p.Sum, d.Sum);
+                        if (com.Flag == 0)//电脑玩家没特殊情况就允许结算
+                        {
+                            com.GetResult(com.Sum, d.Sum);
+                        }
+                        if (p.Flag == 0)//人类玩家没特殊情况就允许结算
+                        {
+                            //p.GetResult(p.Sum, d.Sum);
+                        }
                     }
                 }
                 //if (p.Money >= 1500)
@@ -59,6 +58,28 @@ namespace BlackJack
                 //   Console.WriteLine("红包密码666！");
                 //}
                 //Console.ReadKey();
+                switch (com.IfMainExp)
+                {
+                    case 0:
+                        com.EditTendency(3);
+                        break;
+                    case 1:
+                        com.EditTendency(4);
+                        break;
+                    default:
+                        break;
+                }
+                switch (com.IfViceExp)
+                {
+                    case 2:
+                        com.EditTendency(5);
+                        break;
+                    case 3:
+                        com.EditTendency(6);
+                        break;
+                    default:
+                        break;
+                }
                 Console.WriteLine("**********************************************");
                 round++;
                 Console.Clear();
@@ -1342,10 +1363,6 @@ namespace BlackJack
                         if (p.Knock == "d")
                         {
                             p.Win += 2;
-                        }
-                        else if (p.IfViceExp == 0)
-                        {
-                            p.Win += 1;
                         }
                         else
                         {
