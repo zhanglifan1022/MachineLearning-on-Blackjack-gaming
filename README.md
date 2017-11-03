@@ -36,5 +36,7 @@ Heres the blue print:
 
 2017/11/1   ~30%
 
-9.proved that the computer win rate can infinitely approach the theoretical and mathematical win rate, cause he is 
+9. Learning BP neural network so as to modify punishment/rewarding value.
+
+10.proved that the computer win rate can infinitely approach the theoretical and mathematical win rate, cause he is 
 always tend to take the 'right' option.
