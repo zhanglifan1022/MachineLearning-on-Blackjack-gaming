@@ -29,8 +29,11 @@ Heres the blue print:
 8.Total:100000000/10000000000000 games played.*********Ongoing**********
 
 8.1 Current win rate(steady state after 1h running):
+
 2017/11/3   ~39% 
+
 2017/11/2   ~32%
+
 2017/11/1   ~30%
 
 9.proved that the computer win rate can infinitely approach the theoretical and mathematical win rate, cause he is 
