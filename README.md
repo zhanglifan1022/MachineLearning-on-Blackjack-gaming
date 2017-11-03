@@ -35,6 +35,7 @@ Heres the blue print:
 2017/11/2   ~32%
 
 2017/11/1   ~30%
+
 9. Learning BP neural network so as to modify punishment/rewarding value.
 
 10.proved that the computer win rate can infinitely approach the theoretical and mathematical win rate, cause he is 
