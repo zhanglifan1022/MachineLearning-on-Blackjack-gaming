@@ -35,7 +35,7 @@ namespace BlackJack
                 Console.WriteLine("----------");
 
                 //庄家回合
-                if (com.Flag == 1 && p.Flag == 1)//电脑玩家和人类玩家同时有特殊状况？有则不进入庄家回合直接下一轮
+                if (com.Flag == 1)//电脑玩家和人类玩家同时有特殊状况？有则不进入庄家回合直接下一轮
                 { }
                 else
                 {
@@ -576,7 +576,7 @@ namespace BlackJack
                     fs3.Close();
                     FileStream fs31 = new FileStream(MainPath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
                     StreamWriter sw31 = new StreamWriter(fs31, Encoding.Default);
-                    sw31.Write(sb3.ToString());//写入文件
+                    sw31.Write((sb3.ToString()));//写入文件
                     sw31.Flush();
                     sb3.Clear();
                     sw31.Close();
@@ -614,7 +614,7 @@ namespace BlackJack
                     fs4.Close();
                     FileStream fs41 = new FileStream(MainPath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
                     StreamWriter sw41 = new StreamWriter(fs41, Encoding.Default);
-                    sw41.Write(sb4.ToString());//写入文件
+                    sw41.Write((sb4.ToString()));//写入文件
                     sw41.Flush();
                     sb4.Clear();
                     sw41.Close();
@@ -638,7 +638,7 @@ namespace BlackJack
                     sb5.Append(strend1);
                     FileStream fs51 = new FileStream(VicePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
                     StreamWriter sw51 = new StreamWriter(fs51, Encoding.Default);
-                    sw51.Write(sb5.ToString());//写入文件
+                    sw51.Write((sb5.ToString()));//写入文件
                     sw51.Flush();
                     sb5.Clear();
                     sw51.Close();
@@ -658,11 +658,11 @@ namespace BlackJack
                         else
                         {
                             sb6.Append(sum + "\r\n");                            //写入和
-                            line6 = sr6.ReadLine();      //读取下一行但不动作
+                            sr6.ReadLine();      //读取下一行但不动作
                             sb6.Append(htrend1 + "\r\n");                          //写入倾向一
-                            line6 = sr6.ReadLine();      //读取下一行但不动作
+                            sr6.ReadLine();      //读取下一行但不动作
                             sb6.Append(strend1 + "\r\n");                          //写入倾向二
-                            line6 = sr6.ReadLine();      //读取下一行但不动作
+                            sr6.ReadLine();      //读取下一行但不动作
                             line6 = sr6.ReadLine();      //读取下一行也就是紧接着的别的数据开端
                         }
                     }
@@ -670,7 +670,7 @@ namespace BlackJack
                     fs6.Close();
                     FileStream fs61 = new FileStream(VicePath, FileMode.Open, FileAccess.Write, FileShare.ReadWrite);
                     StreamWriter sw61 = new StreamWriter(fs61, Encoding.Default);
-                    sw61.Write(sb6.ToString());//写入文件
+                    sw61.Write((sb6.ToString()));//写入文件
                     sw61.Flush();
                     sb6.Clear();
                     sw61.Close();
@@ -831,7 +831,7 @@ namespace BlackJack
             p3 = (double)(i3) / (i1 + i2 + i3 + i4);
             p4 = (double)(i4) / (i1 + i2 + i3 + i4);
             p = ran.NextDouble();//随机0~1
-            Console.WriteLine("Win rate:H({0}%),D({1}%),S({2}%),R({3}%）", 100 * p1, 100 * p2, 100 * p3, 100 * p4);//实时显示当前倾向
+            Console.WriteLine("Win rate:H({0}%),D({1}%),S({2}%),R({3}%）", Math.Round(100 * p1), Math.Round(100 * p2),Math.Round( 100 * p3), Math.Round(100 * p4));//实时显示当前倾向
             if ((p >= 0) && (p < p1))    //根据倾向大小划分0~1的范围
             {
                 return "h";
@@ -856,7 +856,7 @@ namespace BlackJack
             p1 = (double)(i1) / (i1 + i2);//各自倾向占比
             p2 = (double)(i2) / (i1 + i2);//有四种选择
             p = ran.NextDouble();
-            Console.WriteLine("Current Win rate:H({0}%),S({1}%)", 100 * p1, 100 * p2);
+            Console.WriteLine("Current Win rate:H({0}%),S({1}%)", Math.Round(100 * p1), Math.Round(100 * p2));
             if ((p >= 0) && (p < p1))
             {
                 return "h";
