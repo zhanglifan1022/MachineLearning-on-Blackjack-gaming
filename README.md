@@ -30,6 +30,8 @@ Heres the blue print:
 
 8.1 Current win rate(steady state after 1h running):
 
+2017/11/8 ~43%
+
 2017/11/6 ~42%
 
 2017/11/4  ~41%
