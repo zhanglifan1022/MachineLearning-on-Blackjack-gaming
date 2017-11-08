@@ -258,6 +258,10 @@ namespace BlackJack
                     dtrend = Abs(dtrend + 24);
                     strend = Abs(strend - 8);
                     rtrend = Abs(rtrend - 8);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
                 }
                 else if (ifviceexpexist  == 0 && knock != "d")
                 {
@@ -266,6 +270,10 @@ namespace BlackJack
                     dtrend = Abs(dtrend - 4);
                     strend = Abs(strend + 12);
                     rtrend = Abs(rtrend - 4);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
                 }
                 else
                 {
@@ -276,6 +284,12 @@ namespace BlackJack
                     rtrend = Abs(rtrend - 4);
                     htrend1 = Abs(htrend1 - 12);
                     strend1 = Abs(strend1 + 12);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
+                    if (htrend1 < 22) htrend1 += 21;
+                    if (strend1 < 22) strend1 += 21;
                 }
                 Console.WriteLine("Computer Win!");
             }
@@ -288,6 +302,10 @@ namespace BlackJack
                     dtrend = Abs(dtrend - 24);
                     strend = Abs(strend + 6);
                     rtrend = Abs(rtrend + 6);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
                 }
                 else if (ifviceexpexist  == 0 && knock != "d")
                 {
@@ -296,6 +314,10 @@ namespace BlackJack
                     dtrend = Abs(dtrend + 6);
                     strend = Abs(strend - 24);
                     rtrend = Abs(rtrend + 6);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
                 }
                 else
                 {
@@ -306,6 +328,12 @@ namespace BlackJack
                     rtrend = Abs(rtrend - 4);
                     htrend1 = Abs(htrend1 + 12);
                     strend1 = Abs(strend1 - 12);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
+                    if (htrend1 < 22) htrend1 += 21;
+                    if (strend1 < 22) strend1 += 21;
                 }
                 Console.WriteLine("Computer Lose.");
             }
@@ -783,6 +811,10 @@ namespace BlackJack
                     dtrend = Abs(dtrend - 24);
                     strend = Abs(strend + 8);
                     rtrend = Abs(rtrend + 8);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
                 }
                 else if (ifviceexpexist == 0)
                 {
@@ -791,6 +823,10 @@ namespace BlackJack
                     htrend = Abs(htrend - 12);
                     strend = Abs(strend + 8);
                     rtrend = Abs(rtrend + 4);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
                 }
                 else
                 {
@@ -802,6 +838,12 @@ namespace BlackJack
                     rtrend = Abs(rtrend - 4);
                     htrend1 = Abs(htrend1 - 12);
                     strend1 = Abs(strend1 + 12);
+                    if (htrend < 22) htrend += 21;
+                    if (dtrend < 22) dtrend += 21;
+                    if (strend < 22) strend += 21;
+                    if (rtrend < 22) rtrend += 21;
+                    if (htrend1 < 22) htrend1 += 21;
+                    if (strend1 < 22) strend1 += 21;
                 }
                 Console.WriteLine("Computer Burst!");
             }
@@ -813,6 +855,10 @@ namespace BlackJack
                 dtrend = Abs(dtrend + 2);
                 strend = Abs(strend + 2);
                 rtrend = Abs(rtrend - 6);
+                if (htrend < 22) htrend += 21;
+                if (dtrend < 22) dtrend += 21;
+                if (strend < 22) strend += 21;
+                if (rtrend < 22) rtrend += 21;
                 Console.WriteLine("Computer Surrender.");
             }
             finally
@@ -1333,6 +1379,10 @@ namespace BlackJack
                             com.DTrend = Abs(com.DTrend + 24);
                             com.STrend = Abs(com.STrend - 8);
                             com.RTrend = Abs(com.RTrend - 8);
+                            if (com.HTrend < 22) com.HTrend += 21;
+                            if (com.DTrend < 22) com.DTrend += 21;
+                            if (com.STrend < 22) com.STrend += 21;
+                            if (com.RTrend < 22) com.RTrend += 21;
                         }
                         else if (com.IfViceExp == 0)
                         {
@@ -1341,6 +1391,10 @@ namespace BlackJack
                             com.DTrend = Abs(com.DTrend - 4);
                             com.STrend = Abs(com.STrend + 12);
                             com.RTrend = Abs(com.RTrend - 4);
+                            if (com.HTrend < 22) com.HTrend += 21;
+                            if (com.DTrend < 22) com.DTrend += 21;
+                            if (com.STrend < 22) com.STrend += 21;
+                            if (com.RTrend < 22) com.RTrend += 21;
                         }
                         else
                         {
@@ -1351,6 +1405,12 @@ namespace BlackJack
                             com.RTrend = Abs(com.RTrend - 4);
                             com.HTrend1 = Abs(com.HTrend1 - 12);
                             com.STrend1 = Abs(com.STrend1 + 12);
+                            if (com.HTrend < 22) com.HTrend += 21;
+                            if (com.DTrend < 22) com.DTrend += 21;
+                            if (com.STrend < 22) com.STrend += 21;
+                            if (com.RTrend < 22) com.RTrend += 21;
+                            if (com.HTrend1 < 22) com.HTrend1 += 21;
+                            if (com.STrend1 < 22) com.STrend1 += 21;
                         }
                         Console.WriteLine("Dealer Burst!Computer Win!");
                         break;
