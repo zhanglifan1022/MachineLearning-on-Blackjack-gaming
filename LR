@@ -1,0 +1,228 @@
+# -*- coding: utf-8 -*-
+import sys
+import math
+import pandas as pd
+import matplotlib
+import numpy as np
+import scipy as sp
+import IPython
+from IPython import display
+import warnings
+warnings.filterwarnings('ignore')
+#通用模型
+from sklearn import svm, tree, linear_model, neighbors, naive_bayes, ensemble, discriminant_analysis, gaussian_process
+#数据预处理模块
+from sklearn import preprocessing
+from sklearn import feature_selection
+from sklearn import model_selection
+from sklearn import metrics
+#画图模块
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.pylab as pylab
+import seaborn as sns
+from pandas.tools.plotting import scatter_matrix
+#-------------------------------------------------------------------------------------------------------- 
+#图形配置
+mpl.style.use( 'ggplot' )
+sns.set_style( 'white' )
+pylab.rcParams[ 'figure.figsize' ] = 12 , 8
+#-------------------------------------------------------------------------------------------------------- 
+#导入文件
+data_raw = pd.read_csv('/Users/Lifan/Titanicdatamining/train.csv')
+data_test  = pd.read_csv('/Users/Lifan/Titanicdatamining/test.csv')
+#make a cope 
+data_train = data_raw.copy(deep = True)
+data_cleaner = [data_train, data_test]
+#-------------------------------------------------------------------------------------------------------- 
+#数据预处理
+for dataset in data_cleaner:    
+    #complete embarked with mode
+    dataset['Embarked'].fillna(dataset['Embarked'].mode()[0], inplace = True)
+    
+    #complete missing age with median
+    dataset['Fare'].fillna(dataset['Fare'][dataset['Pclass'] == 3].dropna().median(), inplace = True)
+    
+drop_column = ['Ticket']
+data_train.drop(drop_column, axis=1, inplace = True)
+
+#创建新特征
+count =0
+guess_ages = np.zeros((5,3))
+title_dic = {0:'Master', 1:'Miss',2:'Mr',3:'Mrs',4:'Mics'}
+for dataset in data_cleaner:   
+    dataset['FamilySize'] = dataset ['SibSp'] + dataset['Parch'] + 1
+    dataset['Title'] = dataset['Name'].str.split(", ", expand=True)[1].str.split(".", expand=True)[0]
+    for index in range(len(dataset['Name'])):
+        if dataset.loc[index,'Title'] == 'Master':
+            dataset.loc[index,'Title'] = 'Master'
+        elif dataset.loc[index,'Title'] == 'Miss' or dataset.loc[index,'Title'] == 'Mlle' or dataset.loc[index,'Title'] == 'Ms': 
+            dataset.loc[index,'Title'] = 'Miss'
+        elif dataset.loc[index,'Title'] == 'Mr': 
+            dataset.loc[index,'Title'] = 'Mr'
+        elif dataset.loc[index,'Title'] == 'Mrs'  or dataset.loc[index,'Title'] == 'Mme': 
+            dataset.loc[index,'Title'] = 'Mrs'
+        else:
+            dataset.loc[index,'Title'] = 'Mics'
+            
+    for index in range(len(dataset['Name'])):        
+        if dataset.loc[index,'FamilySize'] == 1:
+            dataset.loc[index,'FamilySize'] = 'Single'
+        elif dataset.loc[index,'FamilySize'] >= 5:
+            dataset.loc[index,'FamilySize'] = 'LargeFam'
+        else:
+            dataset.loc[index,'FamilySize'] = 'SmallFam'
+    #Discrete variables
+    for i in range(0, 5):
+        for j in range(0, 3):
+            guess_df = dataset[(dataset.Pclass == j+1) &(dataset['Title'] == title_dic[i])]['Age'].dropna()
+
+            # age_mean = guess_df.mean()
+            # age_std = guess_df.std()
+            # age_guess = rnd.uniform(age_mean - age_std, age_mean + age_std)
+
+            age_guess = guess_df.mean()
+            # Convert random age float to nearest .5 age
+            if(math.isnan(age_guess)):         
+                pass
+            else:
+                guess_ages[i,j] = int( age_guess/0.5 + 0.5 ) * 0.5
+            
+    for i in range(0, 5):
+        for j in range(0, 3):
+            dataset.loc[ (dataset.Age.isnull()) & (dataset.Pclass == j+1) & (dataset['Title'] == title_dic[i]),\
+                    'Age'] = guess_ages[i,j]
+
+    dataset['Age'] = dataset['Age'].astype(int)
+    dataset.Cabin.loc[(dataset.Cabin.notnull())] = 1
+    dataset['Cabin'] = dataset['Cabin'].fillna(0)
+    dataset['IsAlone'] = 1 #initialize to yes/1 is alone
+    dataset['IsAlone'].loc[dataset['FamilySize'] != 'Single'] = 0 
+    dataset['FareBin'] = pd.qcut(dataset['Fare'], 4)
+    dataset['AgeBin'] = pd.cut(dataset['Age'].astype(int), 5)
+#-------------------------------------------------------------------------------------------------------- 
+#类目转换为模型量    
+    dummies_list = ['Pclass','FamilySize','Title']
+    dummies_count = 0
+    tmp = dataset['PassengerId']
+    for item in dummies_list:
+        dummies_name = pd.get_dummies(dataset[item], prefix= item)
+        tmp = pd.concat([tmp,dummies_name],axis=1)
+        dummies_count += 1    
+    if(count == 0):
+        df_train = tmp
+        df_train_x = df_train.drop(['PassengerId'], axis=1)
+    else:
+        df_test = tmp
+        df_test_x = df_test.drop(['PassengerId'], axis=1)    
+    count+=1
+#-------------------------------------------------------------------------------------------------------- 
+#模型比较
+cv_split = model_selection.ShuffleSplit(n_splits = 8, test_size = .3, train_size = .6, random_state = 0 )
+df_train_y = data_raw['Survived']
+
+MLA_columns = ['Name','Accuracy Mean','Survive Correctness','Dead Correctness']
+MLA_compare = pd.DataFrame(columns = MLA_columns)
+MLA = [
+    #Ensemble Methods
+    ensemble.AdaBoostClassifier(),
+    ensemble.BaggingClassifier(),
+    ensemble.ExtraTreesClassifier(),
+    ensemble.GradientBoostingClassifier(),
+    ensemble.RandomForestClassifier(n_estimators = 100),
+
+    #Gaussian Processes
+    gaussian_process.GaussianProcessClassifier(),
+    
+    #GLM
+    linear_model.LogisticRegression(),
+    linear_model.PassiveAggressiveClassifier(),
+    linear_model. RidgeClassifierCV(),
+    linear_model.SGDClassifier(),
+    linear_model.Perceptron(),
+    
+    #Navies Bayes
+    naive_bayes.GaussianNB(),
+    
+    #Nearest Neighbor
+    neighbors.KNeighborsClassifier(n_neighbors = 3),
+    
+    #SVM
+    svm.SVC(probability=True),
+    svm.LinearSVC(),
+    
+    #Trees    
+    tree.DecisionTreeClassifier(),
+    tree.ExtraTreeClassifier(),
+    ]
+
+#index through MLA and save performance to table
+row_index = 0
+for alg in MLA:
+
+    #set name and parameters
+    MLA_compare.loc[row_index, 'Name'] = alg.__class__.__name__
+
+    #score model with cross validation:
+    cv_results = model_selection.cross_val_score(alg, df_train_x, df_train_y, cv =10)
+    y_pred = model_selection.cross_val_predict(alg,df_train_x,df_train_y,cv=10)
+    MLA_compare.loc[row_index, 'Survive Correctness'] = 100*metrics.confusion_matrix(df_train_y,y_pred)[0][0]/(metrics.confusion_matrix(df_train_y,y_pred)[0][0]+metrics.confusion_matrix(df_train_y,y_pred)[0][1])
+    MLA_compare.loc[row_index, 'Dead Correctness'] = 100*metrics.confusion_matrix(df_train_y,y_pred)[1][1]/(metrics.confusion_matrix(df_train_y,y_pred)[1][0]+metrics.confusion_matrix(df_train_y,y_pred)[1][1])
+    
+    MLA_compare.loc[row_index, 'Accuracy Mean'] = cv_results.mean()
+    #let's know the worst that can happen!
+
+    row_index+=1
+#print and sort table
+MLA_compare.sort_values(by = ['Accuracy Mean'], ascending = False, inplace = True)
+print(MLA_compare)
+#-------------------------------------------------------------------------------------------------------- 
+#模型调参
+#for alg in MLA:
+ #   parameter_grid = {
+  #               'C' : [1.0,2.0,3.0,4.0,5.0],
+   #              'max_iter' : [100,200,300,400,500],
+    #             'solver': ['lbfgs'],
+     #            }
+    #grid_search = model_selection.GridSearchCV(alg,
+     #                      param_grid=parameter_grid,
+      #                     cv=10)
+    #grid_search.fit(df_train_x, df_train_y)
+    #print('Best score: {}'.format(grid_search.best_score_))
+    #print('Best parameters: {}'.format(grid_search.best_params_))
+#--------------------------------------------------------------------------------------------------------      
+#输出结果
+predictor = linear_model.LogisticRegression(solver = 'liblinear', C= 2.0, max_iter= 100, penalty= 'l1')
+predictor.fit(df_train_x,df_train_y)
+print(pd.DataFrame({"columns":list(df_train_x.columns), "coef":list(predictor.coef_.T)}))
+df_test_y = predictor.predict(df_test_x)
+result = pd.DataFrame({'PassengerId':data_test['PassengerId'], 'Survived':df_test_y.astype(np.int32)})
+result.to_csv("/Users/Lifan/Titanicdatamining/LR_hyper_predictions.csv", index=False)
+#--------------------------------------------------------------------------------------------------------    
+#查看学习曲线
+plt.figure()
+plt.title('LR learning curve')
+ylim= None
+if ylim is not None:
+    plt.ylim(*ylim)
+plt.xlabel("Training examples")
+plt.ylabel("Score")
+train_sizes, train_scores, test_scores = model_selection.learning_curve(predictor, df_train_x, df_train_y, groups=None, train_sizes=np.linspace(.05, 1.0, 20), cv=10, scoring=None, exploit_incremental_learning=False, n_jobs=1, pre_dispatch='all', verbose=0)
+train_scores_mean = np.mean(train_scores, axis=1)
+train_scores_std = np.std(train_scores, axis=1)
+test_scores_mean = np.mean(test_scores, axis=1)
+test_scores_std = np.std(test_scores, axis=1)
+plt.grid()
+
+plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+plt.legend(loc="best")
+plt.show()
+#-------------------------------------------------------------------------------------------------------- 
